@@ -183,7 +183,7 @@ begin
     AFilesOlder.Sort;
 end;
 
-function DeleteFilesOlderThan(const ADirectory: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer): Integer;
+function DeleteFilesOlderThanEx(const ADirectory: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
 var
   LFilesToCheck: TStringList;
   LOlderFilesWithTimeStamp: TStringList;
@@ -216,11 +216,26 @@ begin
 
           if FileExists(LFileName) then 
             if DeleteFile(LFileName) then
+            begin
+              ADeletedFiles.Add(LFileName);
               Inc(Result);
+            end;
         end;
       end;
   finally
     LFilesToCheck.Free;
     LOlderFilesWithTimeStamp.Free;
+  end;
+end;
+
+function DeleteFilesOlderThan(const ADirectory: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer): Integer;
+var
+  LTempFilesList: TStringList;
+begin
+  LTempFilesList := TStringList.Create;
+  try
+    Result := DeleteFilesOlderThanEx(ADirectory, AFilesOlderThan, AMinFilesToKeep, LTempFilesList);
+  finally
+    LTempFilesList.Free;
   end;
 end;
