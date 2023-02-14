@@ -18,6 +18,10 @@ type
   function SystemTimeToFileTime(const SystemTime: SYSTEMTIME; var FileTime: TFileTime): BOOL; external 'SystemTimeToFileTime@kernel32.dll stdcall';
   function CompareFileTime(const FileTime1, FileTime2: TFileTime): Integer; external 'CompareFileTime@kernel32.dll stdcall';
 
+function IsLeapYear(const AYear: Integer): Boolean;
+begin
+  Result := (AYear mod 4 = 0) and ((AYear mod 100 <> 0) or (AYear mod 400 = 0));
+end;
 
 procedure ClearSystemTime(var ASystemTime: SYSTEMTIME);
 begin
@@ -36,6 +40,31 @@ begin
   Result := 'Invalid "' + AValueName + '" value for SystemTime: ' + IntToStr(AValue);
 end;
 
+function MonthLenght(const AYear, AMonth: Integer): Integer;
+begin
+  case AMonth of
+    1: Result := 31; 
+    2: 
+      begin
+        if IsLeapYear(AYear) then
+          Result := 29
+        else
+          Result := 28;
+      end;
+    3: Result := 31; 
+    4: Result := 30; 
+    5: Result := 31; 
+    6: Result := 30; 
+    7: Result := 31; 
+    8: Result := 31; 
+    9: Result := 30; 
+    10: Result := 31; 
+    11: Result := 30; 
+    12: Result := 31; 
+  end;
+end;
+ 
+
 function InitSystemTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMillisecond: WORD): SYSTEMTIME;
 begin 
   Result.Year := AYear; 
@@ -47,7 +76,7 @@ begin
 
   Result.DayOfWeek := 0; 
   
-  if (ADay >= 1) and (ADay <= 31) then
+  if (ADay >= 1) and (ADay <= (MonthLenght(Result.Year, Result.Month))) then
     Result.Day := ADay
   else
     RaiseException(GetSystemTimeErrorStr('Day', ADay));
