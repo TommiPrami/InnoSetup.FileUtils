@@ -113,19 +113,6 @@ begin
     and (ASystemTime1.Millisecond = ASystemTime2.Millisecond);
 end;
 
-(*
-function CompareSystemTime(const ASystemTime1, ASystemTime2: SYSTEMTIME): Integer;
-var
-  LFileTime1: TFileTime;
-  LFileTime2: TFileTime;
-begin
-  if Boolean(SystemTimeToFileTime(ASystemTime1, LFileTime1)) and Boolean(SystemTimeToFileTime(ASystemTime2, LFileTime2)) then
-    Result := CompareFileTime(LFileTime1, LFileTime2)
-  else
-    Result := MIN_INT;
-end; 
-*)
-
 function SystemTimeGreater(const ASystemTime1, ASystemTime2: SYSTEMTIME): Boolean;
 begin
   if SameSystemTime(ASystemTime1, ASystemTime2) then
@@ -187,6 +174,19 @@ begin
   else
     Result := -1
 end;
+
+(*
+function CompareSystemTime(const ASystemTime1, ASystemTime2: SYSTEMTIME): Integer;
+var
+  LFileTime1: TFileTime;
+  LFileTime2: TFileTime;
+begin
+  if Boolean(SystemTimeToFileTime(ASystemTime1, LFileTime1)) and Boolean(SystemTimeToFileTime(ASystemTime2, LFileTime2)) then
+    Result := CompareFileTime(LFileTime1, LFileTime2)
+  else
+    Result := MIN_INT;
+end; 
+*)
 
 function GetSortableTimeStampStr(const ATimeStamp: SYSTEMTIME): string;
 begin

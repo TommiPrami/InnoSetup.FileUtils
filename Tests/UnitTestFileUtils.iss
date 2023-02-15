@@ -191,7 +191,7 @@ begin
   CheckFile(AFiles, 0, 'icudt30.dll');
   CheckFile(AFiles, 3, 'libeay32.dll');
   CheckFile(AFiles, 6, 'libpq.dll');
-  // not an natural sort/compare, thats why msvcp140.dll is not last file
+  // not an natural sort/compare, thats why msvcp140.dll is not last file as is in Win11 Explorer
   CheckFile(AFiles, 8, 'msvcp80.dll');
 end;
 
