@@ -127,15 +127,21 @@ begin
   end;
 end;
 
-function GetFilesFromDirectory(const ADirectory: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
+function GetFilesFromDirectoryEx(const ADirectory, AWildCard: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
 var
   LDirectory: string;
   LFindRec: TFindRec;
+  LWildCard: string;
 begin
   Result := False;
+  if AWildCard = '' then
+    LWildCard := '*'
+  else
+    LWildCard :=  AWildCard;
+
   LDirectory := AddBackslash(ADirectory);
 
-  if FindFirst(ExpandConstant(LDirectory + '*'), LFindRec) then
+  if FindFirst(ExpandConstant(LDirectory + LWildCard ), LFindRec) then
   try
     repeat
       if LFindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
@@ -149,6 +155,13 @@ begin
   if Result and ASortFiles and (AFiles.Count >= 2) then
     AFiles.Sort;
 end;
+
+
+function GetFilesFromDirectory(const ADirectory: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
+begin
+  Result := GetFilesFromDirectoryEx(ADirectory,'', AFiles, ASortFiles);
+end;
+
 
 function GetFilesOlderThan(const AFilesToCheck, AFilesOlder: TStringList; const AFilesOlderThan: SYSTEMTIME; const AAddSortableTimeStampPrefix: Boolean): Boolean;
 var

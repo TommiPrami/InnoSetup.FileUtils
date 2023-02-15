@@ -211,6 +211,30 @@ begin
   end;
 end;
 
+procedure Test_GetFilesFromDirectoryEx;
+var
+  LFiles: TStringList;
+begin
+  InitTest('Test_GetFilesFromDirectoryEx');
+
+  LFiles := TStringList.Create;
+  try
+    if GetFilesFromDirectoryEx(GetTestFileOrDir(''), '*.zip', LFiles, True) then
+      ErrorMsg('Error Returned: True', True);
+
+    if LFiles.Count <> 0 then
+      ErrorMsg('Error: Wrong file count: ' + IntToStr(LFiles.Count), True);
+
+    if not GetFilesFromDirectoryEx(GetTestFileOrDir(''), '*.dll', LFiles, True) then
+      ErrorMsg('Error Returned: False', True);
+
+    if LFiles.Count <> 9 then
+      ErrorMsg('Error: Wrong file count: ' + IntToStr(LFiles.Count), True);
+  finally
+    LFiles.Free;
+  end;
+end;
+
 procedure Test_GetFilesOlderThan;
 var
   LAllFiles: TStringList;
@@ -358,6 +382,7 @@ begin
         Test_TryGetFileTimes;
         Test_TrySetFileTimes;
         Test_GetFilesFromDirectory;
+        Test_GetFilesFromDirectoryEx;
         Test_GetFilesOlderThan;
         Test_DeleteFilesOlderThan;
       end;
