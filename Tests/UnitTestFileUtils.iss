@@ -178,6 +178,23 @@ begin
   // TrySetFileTimes(const AFileName: string; const AFileTimes: TFileTimes): Boolean;
 end;
 
+procedure CheckFile(const AFiles: TStringList; const AIndex: Integer; const AExpectedFileName: string);
+begin
+  if not SameText(AFiles[AIndex], GetTestFileOrDir(AExpectedFileName)) then
+    ErrorMsg('Error: Wrong file index ' + IntToStr(AIndex) + ': ' + AFiles[AIndex], True);
+end;
+
+procedure CheckFiles(const AFiles: TStringList);
+begin
+  AFiles.Sort;
+
+  CheckFile(AFiles, 0, 'icudt30.dll');
+  CheckFile(AFiles, 3, 'libeay32.dll');
+  CheckFile(AFiles, 6, 'libpq.dll');
+  // not an natural sort/compare, thats why msvcp140.dll is not last file
+  CheckFile(AFiles, 8, 'msvcp80.dll');
+end;
+
 procedure Test_GetFilesFromDirectory;
 var
   LFiles: TStringList;
@@ -192,20 +209,7 @@ begin
     if LFiles.Count <> 9 then
       ErrorMsg('Error: Wrong file count: ' + IntToStr(LFiles.Count), True);
 
-    LFiles.Sort;
-
-    if not SameText(LFiles[0], GetTestFileOrDir('icudt30.dll')) then
-      ErrorMsg('Error: Wrong file index 0: ' + LFiles[0], True);
-
-    if not SameText(LFiles[3], GetTestFileOrDir('libeay32.dll')) then
-      ErrorMsg('Error: Wrong file index 3: ' + LFiles[3], True);
-
-    if not SameText(LFiles[6], GetTestFileOrDir('libpq.dll')) then
-      ErrorMsg('Error: Wrong file index 6: ' + LFiles[6], True);
-
-    // not an natural sort/compare, thats why msvcp140.dll is not last file
-    if not SameText(LFiles[8], GetTestFileOrDir('msvcp80.dll')) then
-      ErrorMsg('Error: Wrong file index 8: ' + LFiles[8], True);
+    CheckFiles(LFiles);
   finally
     LFiles.Free;
   end;
@@ -230,6 +234,8 @@ begin
 
     if LFiles.Count <> 9 then
       ErrorMsg('Error: Wrong file count: ' + IntToStr(LFiles.Count), True);
+
+    CheckFiles(LFiles);
   finally
     LFiles.Free;
   end;
