@@ -63,7 +63,6 @@ begin
     12: Result := 31; 
   end;
 end;
- 
 
 function InitSystemTime(const AYear, AMonth, ADay, AHour, AMinute, ASecond, AMillisecond: WORD): SYSTEMTIME;
 begin 
@@ -75,7 +74,7 @@ begin
     RaiseException(GetSystemTimeErrorStr('Month', AMonth));
 
   Result.DayOfWeek := 0; 
-  
+
   if (ADay >= 1) and (ADay <= (MonthLenght(Result.Year, Result.Month))) then
     Result.Day := ADay
   else
@@ -100,6 +99,35 @@ begin
     Result.Millisecond := AMillisecond
   else
     RaiseException(GetSystemTimeErrorStr('Millisecond', AMillisecond));
+end;
+
+function DecMonth(const ATime: SYSTEMTIME; const AMonthsToDec: Integer): SYSTEMTIME;
+var
+  LYears: Integer;
+  LMonthsToDec: Integer; 
+  LMonthLenght: Integer;
+begin
+  Result := ATime
+  LMonthsToDec := AMonthsToDec;
+
+  if LMonthsToDec >= 12 then
+  begin
+    LYears := LMonthsToDec div 12;
+    LMonthsToDec := LMonthsToDec - (LYears * 12); 
+    Result.Year := Result.Year - LYears;
+  end;
+
+  if Result.Month > LMonthsToDec then
+    Result.Month := Result.Month - LMonthsToDec
+  else
+  begin
+    RESULT.YEAR := Result.Year - 1;
+    Result.Month := 12 - (LMonthsToDec - Result.Month);
+  end;
+
+  LMonthLenght := MonthLenght(Result.Year, Result.Month);
+  if Result.Day > LMonthLenght then
+    Result.Day := LMonthLenght;
 end;
 
 function SameSystemTime(const ASystemTime1, ASystemTime2: SYSTEMTIME): Boolean;

@@ -31,6 +31,28 @@ begin
   Result := AddBackSlash(ExpandConstant('{#SourcePath}') + TEST_DIRECTORY) + AFileName;
 end;
 
+procedure Test_DecMonth;
+var
+  LSourceTime: SYSTEMTIME;
+  LResultTime: SYSTEMTIME;
+begin
+  InitTest('Test_DecMonth');
+
+  LSourceTime := InitSystemTime(2023, 03, 31, 12, 32, 23, 666);
+  
+  LResultTime := DecMonth(LSourceTime, 1);
+  if not SameSystemTime(LResultTime, InitSystemTime(2023, 02, 28, 12, 32, 23, 666)) then
+    ErrorMsg('Did not ereturn Expected Date Time', True);
+
+  LResultTime := DecMonth(LSourceTime, 3);
+  if not SameSystemTime(LResultTime, InitSystemTime(2022, 12, 31, 12, 32, 23, 666)) then
+    ErrorMsg('Did not ereturn Expected Date Time', True);
+
+  LResultTime := DecMonth(LSourceTime, 15);
+  if not SameSystemTime(LResultTime, InitSystemTime(2021, 12, 31, 12, 32, 23, 666)) then
+    ErrorMsg('Did not ereturn Expected Date Time', True);
+end;
+
 procedure Test_ClearSystemTime;
 var
   LSystemTime1: SYSTEMTIME;
@@ -380,6 +402,7 @@ begin
         // First copy test files for Test_DeleteFilesOlderThan
         CopyTestFiles;
 
+        Test_DecMonth;
         Test_ClearSystemTime;
         Test_InitSystemTime;
         Test_CompareSystemTime;
