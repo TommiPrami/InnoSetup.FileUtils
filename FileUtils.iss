@@ -127,21 +127,21 @@ begin
   end;
 end;
 
-function GetFilesFromDirectoryEx(const ADirectory, AWildCard: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
+function GetFilesFromDirectoryEx(const ADirectory, AFileMask: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
 var
   LDirectory: string;
   LFindRec: TFindRec;
-  LWildCard: string;
+  LFileMask: string;
 begin
   Result := False;
-  if AWildCard = '' then
-    LWildCard := '*'
+  if AFileMask = '' then
+    LFileMask := '*'
   else
-    LWildCard :=  AWildCard;
+    LFileMask :=  AFileMask;
 
   LDirectory := AddBackslash(ADirectory);
 
-  if FindFirst(ExpandConstant(LDirectory + LWildCard ), LFindRec) then
+  if FindFirst(ExpandConstant(LDirectory + LFileMask), LFindRec) then
   try
     repeat
       if LFindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
@@ -156,12 +156,10 @@ begin
     AFiles.Sort;
 end;
 
-
 function GetFilesFromDirectory(const ADirectory: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
 begin
   Result := GetFilesFromDirectoryEx(ADirectory,'', AFiles, ASortFiles);
 end;
-
 
 function GetFilesOlderThan(const AFilesToCheck, AFilesOlder: TStringList; const AFilesOlderThan: SYSTEMTIME; const AAddSortableTimeStampPrefix: Boolean): Boolean;
 var
@@ -196,7 +194,7 @@ begin
     AFilesOlder.Sort;
 end;
 
-function DeleteFilesOlderThanEx(const ADirectory: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
+function DeleteFilesOlderThanEx(const ADirectory, AFileMask: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
 var
   LFilesToCheck: TStringList;
   LOlderFilesWithTimeStamp: TStringList;
@@ -211,7 +209,7 @@ begin
   LFilesToCheck := TStringList.Create;
   LOlderFilesWithTimeStamp := TStringList.Create;
   try
-    if GetFilesFromDirectory(ADirectory, LFilesToCheck, False) then
+    if GetFilesFromDirectoryEx(ADirectory, AFileMask, LFilesToCheck, False) then
       if GetFilesOlderThan(LFilesToCheck, LOlderFilesWithTimeStamp, AFilesOlderThan, True) then
       begin
         LNewerFilesCount := MaxInteger(LFilesToCheck.Count - LOlderFilesWithTimeStamp.Count, 0);
@@ -247,7 +245,7 @@ var
 begin
   LTempFilesList := TStringList.Create;
   try
-    Result := DeleteFilesOlderThanEx(ADirectory, AFilesOlderThan, AMinFilesToKeep, LTempFilesList);
+    Result := DeleteFilesOlderThanEx(ADirectory, '', AFilesOlderThan, AMinFilesToKeep, LTempFilesList);
   finally
     LTempFilesList.Free;
   end;
