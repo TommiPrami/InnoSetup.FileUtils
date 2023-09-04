@@ -56,6 +56,43 @@ begin
     Result := FileCopy(LSourceFile, LDestinationFile, False);
 end;
 
+function FilesAreDifferent(const ASourceFile, ADestFile: string): Boolean;
+var
+  LSourceFileInfo: TFindRec;
+  LDestFileInfo: TFindRec;
+begin
+  Result := True; // Assume files are different by default
+
+  if FindFirst(ASourceFile, LSourceFileInfo) then
+  begin
+    try
+      if FindFirst(ADestFile, LDestFileInfo) then
+      begin
+        try
+          Result := 
+            (LSourceFileInfo.LastWriteTime.dwLowDateTime <> LDestFileInfo.LastWriteTime.dwLowDateTime) 
+            or (LSourceFileInfo.LastWriteTime.dwHighDateTime <> LDestFileInfo.LastWriteTime.dwHighDateTime) 
+            or (LSourceFileInfo.SizeLow <> LDestFileInfo.SizeLow)
+            or (LSourceFileInfo.SizeHigh <> LDestFileInfo.SizeHigh);
+
+          if Result then
+            Result := GetSHA1OfString(ASourceFile) <> GetSHA1OfString(ADestFile); 
+        finally
+          FindClose(LDestFileInfo);
+        end;
+      end;
+    finally
+      FindClose(LSourceFileInfo);
+    end;
+  end;
+end;
+
+procedure CopyFileIfFilesAreDifferent(const ASourceFile, ADestFile: string);
+begin
+  if FilesAreDifferent(ASourceFile, ADestFile) then
+    FileCopy(ASourceFile, ADestFile, False);
+end;
+
 function SplitNameAndValue(const ANameValuePair: string; var AName, AValue: string): Boolean;
 var
   LSeparatorPosiotion: Integer;

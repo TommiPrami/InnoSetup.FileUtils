@@ -378,6 +378,7 @@ var
   LSourceDir: string;
   LDestinationDir: string;
 begin
+
   LSourceDir := GetTestFileOrDir('');
   LDestinationDir := GetTestFileOrDir(TEST_DETLETEFILES_SUB_DIR);
 
@@ -390,6 +391,67 @@ begin
   CopyFileIfNeeded('libintl-8.dll', LSourceDir, LDestinationDir);
   CopyFileIfNeeded('libpq.dll', LSourceDir, LDestinationDir);
   CopyFileIfNeeded('libeay32.dll', LSourceDir, LDestinationDir);
+end;
+
+function GetFilenamesInfo(const ASourceFile, ADestFile: string): string;
+begin
+  Result := 'Source: "' + ASourceFile +'", and Destination: "' + ADestFile + '"'
+end;
+
+procedure Test_InternalFilesAreDifferent(const ASourceDirectory, ADestinationDirectory, AFileName, ADestinationFileName: string; const AExpectedResult, AdestinationMustExists: Boolean);
+var
+  LSourceFileName: string;
+  LDestinationFileName: string;
+begin
+  if ADestinationFileName <> '' then
+    LDestinationFileName := ADestinationDirectory + ADestinationFileName
+  else
+    LDestinationFileName := ADestinationDirectory + AFileName;
+  
+  LSourceFileName := ASourceDirectory + AFileName; 
+
+  if not FileExists(LSourceFileName) then
+    ErrorMsg('Source file not found: ' + LSourceFileName, True)
+  else if AdestinationMustExists and not FileExists(LDestinationFileName) then
+    ErrorMsg('Destination file not found, even tough mandatory for the test: ' + LDestinationFileName, True)
+  else if FilesAreDifferent(LSourceFileName,  LDestinationFileName) <> AExpectedResult then
+  begin
+    if not AExpectedResult then
+      ErrorMsg('Files should be identical. ' + GetFilenamesInfo(LSourceFileName, LDestinationFileName), True)
+    else
+      ErrorMsg('Files should NOT be identical. + GetFilenamesInfo(LSourceFileName, LDestinationFileName)', True);
+  end
+  else
+    ErrorMsg('Expected result for - ' +  + GetFilenamesInfo(LSourceFileName, LDestinationFileName), False);
+end;
+
+procedure DeleteTestFiles(const ADirectory: string);
+var
+  LOlderThanTimeStamp: SYSTEMTIME;
+begin
+  LOlderThanTimeStamp := InitSystemTime(2066, 06,  18, 12, 12, 12, 012);
+  DeleteFilesOlderThan(ADirectory,  LOlderThanTimeStamp, 0);
+end;
+
+procedure Test_CopyFileIfChanged;
+var
+  LSourceDir: string;
+  LDestinationDir: string;
+begin
+  InitTest('Test_CopyFileIfChanged');
+
+  LSourceDir := GetTestFileOrDir('');
+  LDestinationDir := GetTestFileOrDir(TEST_DETLETEFILES_SUB_DIR);
+
+  CopyTestFiles;
+
+  Test_InternalFilesAreDifferent(LSourceDir, LDestinationDir, 'msvcp80.dll', '', False, True);
+  Test_InternalFilesAreDifferent(LSourceDir, LDestinationDir, 'icuin30.dll', '', False, True);
+  Test_InternalFilesAreDifferent(LSourceDir, LDestinationDir, 'icuin30.dll', 'msvcp80.dll', True, True);
+  Test_InternalFilesAreDifferent(LSourceDir, LDestinationDir, 'icuin30.dll', 'uuuuh_msvcp80.dll', True, False);
+
+  // Get Rid of test files...
+  DeleteTestFiles(LDestinationDir);
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -414,6 +476,7 @@ begin
         Test_GetFilesFromDirectoryEx;
         Test_GetFilesOlderThan;
         Test_DeleteFilesOlderThan;
+        Test_CopyFileIfChanged;
       end;
   end;
 end;
