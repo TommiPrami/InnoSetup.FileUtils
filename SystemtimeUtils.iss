@@ -181,7 +181,7 @@ begin
               Result := True
             else 
             begin
-              if ASystemTime1.Millisecond < ASystemTime2.Millisecond then
+              if ASystemTime1.Millisecond <= ASystemTime2.Millisecond then
                 Result := False
               else if ASystemTime1.Millisecond > ASystemTime2.Millisecond then 
                 Result := True
