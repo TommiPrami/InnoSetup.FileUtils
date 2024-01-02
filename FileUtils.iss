@@ -1,4 +1,6 @@
 ﻿// FileUtils.iss
+// 
+// Requires SystemtimeUtils.iss from https://github.com/TommiPrami/InnoSetup.SystemTimeUtils
 
 const
   OPEN_EXISTING = 3;
