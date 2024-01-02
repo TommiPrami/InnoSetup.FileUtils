@@ -1,6 +1,6 @@
 ﻿// FileUtils.iss
 // 
-// Requires SystemtimeUtils.iss from https://github.com/TommiPrami/InnoSetup.SystemTimeUtils
+//   - Requires SystemtimeUtils.iss from https://github.com/TommiPrami/InnoSetup.SystemTimeUtils
 
 const
   OPEN_EXISTING = 3;
@@ -9,7 +9,6 @@ const
   INVALID_HANDLE_VALUE = 4294967295;
   MAX_INT = 2147483647;
   MIN_INT = -2147483648;
-
 
 type
   TFileTimes = record
@@ -166,7 +165,8 @@ begin
   end;
 end;
 
-function GetFilesFromDirectoryEx(const ADirectory, AFileMask: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
+function GetFilesFromDirectoryEx(const ADirectory, AFileMask: string; const AFiles: TStringList; 
+  const ASortFiles: Boolean): Boolean;
 var
   LDirectory: string;
   LFindRec: TFindRec;
@@ -200,7 +200,8 @@ begin
   Result := GetFilesFromDirectoryEx(ADirectory,'', AFiles, ASortFiles);
 end;
 
-function GetFilesOlderThan(const AFilesToCheck, AFilesOlder: TStringList; const AFilesOlderThan: SYSTEMTIME; const AAddSortableTimeStampPrefix: Boolean): Boolean;
+function GetFilesOlderThan(const AFilesToCheck, AFilesOlder: TStringList; const AFilesOlderThan: SYSTEMTIME; 
+  const AAddSortableTimeStampPrefix: Boolean): Boolean;
 var
   LIndex: Integer;
   LFileName: string;
@@ -233,7 +234,8 @@ begin
     AFilesOlder.Sort;
 end;
 
-function DeleteFilesOlderThanEx(const ADirectory, AFileMask: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
+function DeleteFilesOlderThanEx(const ADirectory, AFileMask: string; const AFilesOlderThan: SYSTEMTIME; 
+  const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
 var
   LFilesToCheck: TStringList;
   LOlderFilesWithTimeStamp: TStringList;
