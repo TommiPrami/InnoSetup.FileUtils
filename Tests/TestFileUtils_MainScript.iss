@@ -14,7 +14,8 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-CreateAppDir=no
+DefaultDirName={#MyAppName}
+CreateAppDir=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputDir=.\
@@ -23,18 +24,18 @@ Compression=lzma2/ultra64
 LZMAUseSeparateProcess=yes
 LZMADictionarySize=327680
 LZMANumBlockThreads=1
-LZMANumFastBytes=224
+LZMANumFastBytes=128
 SolidCompression=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Code]
-#include "..\SystemtimeUtils.iss"
+#include "..\..\InnoSetup.SystemTimeUtils\SystemtimeUtils.iss"
 #include "..\FileUtils.iss"
 #include "UnitTestFileUtils.iss"
 
-// [Files]
-// Source: "C:\git_st\Delphi\InnoSetupFB4\HelperBin\HashInfo.txt"; DestDir: "{win}"; Flags: ignoreversion
+[Files]
 //  NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 
