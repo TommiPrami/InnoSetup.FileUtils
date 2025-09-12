@@ -3,11 +3,11 @@
 const
   TEST_DIRECTORY = 'TestFiles';
   TEST_DETLETEFILES_SUB_DIR = 'DeleteTestDir\';
+  
 var
   GCurrentTestMethodName: string;
 
 // TODO: needs refactoring, some helper methods to get rid of duplicate code etc.
-
 procedure ErrorMsg(const AErrorMessage: string; const AShowMessageBox: Boolean);
 var
   LErrorMessage: string;
@@ -184,10 +184,14 @@ begin
   if not TryGetFileTimes(GetTestFileOrDir('msvcp80.dll'),  LFileTimes) then
     ErrorMsg('Error: Returned False', True);
 
+  {
+    Dang, this depends on  When file are checked out from the repository
+    
   LCompareTimeTo := InitSystemTime(2023, 02, 09, 11, 19, 34, 942);
   if not SameSystemTime(LFileTimes.CreationTime, LCompareTimeTo) then
     ErrorMsg('Error: LFileTimes.CreationTime: ' + GetSortableTimeStampStr(LFileTimes.CreationTime) + ' <> ' + GetSortableTimeStampStr(LCompareTimeTo), True);
-
+  }
+  
   LCompareTimeTo := InitSystemTime(2005, 09, 22, 21, 05, 58, 000);
   if not SameSystemTime(LFileTimes.LastWriteTime, LCompareTimeTo) then
     ErrorMsg('Error: LFileTimes.LastWriteTime: ' + GetSortableTimeStampStr(LFileTimes.LastWriteTime) + ' <> ' + GetSortableTimeStampStr(LCompareTimeTo), True);
