@@ -18,7 +18,7 @@ DefaultDirName={#MyAppName}
 CreateAppDir=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputDir=.\
+OutputDir={#GetEnv('CSIDL_COMMON_APPDATA')}\MyAppName\
 OutputBaseFilename=TestFileUtilsSetup
 Compression=lzma2/ultra64
 LZMAUseSeparateProcess=yes
