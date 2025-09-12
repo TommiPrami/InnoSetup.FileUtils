@@ -1,10 +1,10 @@
 ﻿// FileUtils.iss
-// 
-//   - Requires SystemtimeUtils.iss from https://github.com/TommiPrami/InnoSetup.SystemTimeUtils
 
 const
   OPEN_EXISTING = 3;
   GENERIC_READ = $80000000;
+  FILE_SHARE_READ = $00000001;
+  FILE_SHARE_WRITE = $00000002;
   FILE_WRITE_ATTRIBUTES = $0100;
   INVALID_HANDLE_VALUE = 4294967295;
   MAX_INT = 2147483647;
@@ -54,7 +54,7 @@ begin
   LDestinationFile := AddBackslash(ADestinationDir) + AFileName;
 
   if FileExists(LSourceFile) then
-    Result := FileCopy(LSourceFile, LDestinationFile, False);
+    Result := CopyFile(LSourceFile, LDestinationFile, False);
 end;
 
 function FilesAreDifferent(const ASourceFile, ADestFile: string): Boolean;
@@ -91,7 +91,7 @@ end;
 procedure CopyFileIfFilesAreDifferent(const ASourceFile, ADestFile: string);
 begin
   if FilesAreDifferent(ASourceFile, ADestFile) then
-    FileCopy(ASourceFile, ADestFile, False);
+    CopyFile(ASourceFile, ADestFile, False);
 end;
 
 function SplitNameAndValue(const ANameValuePair: string; var AName, AValue: string): Boolean;
@@ -123,7 +123,7 @@ var
 begin
   Result := False;
 
-  LFileHandle := CreateFile(AFileName, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  LFileHandle := CreateFile(AFileName, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if LFileHandle <> INVALID_HANDLE_VALUE then
   try
     Result := Boolean(GetFileTime(LFileHandle, LCreationTime, LLastAccessTime, LLastWriteTime));
@@ -153,20 +153,19 @@ var
 begin
   Result := False;
 
-  LFileHandle := CreateFile(AFileName, FILE_WRITE_ATTRIBUTES, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  LFileHandle := CreateFile(AFileName, FILE_WRITE_ATTRIBUTES, FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if LFileHandle <> INVALID_HANDLE_VALUE then
   try
     if Boolean(SystemTimeToFileTime(AFileTimes.CreationTime, LCreationTime)) 
       and Boolean(SystemTimeToFileTime(AFileTimes.LastAccessTime, LLastAccessTime)) 
-      and Boolean(SystemTimeToFileTime(AFileTimes.LastWriteTime, LLastWriteTime)) then 
+      and Boolean(SystemTimeToFileTime(AFileTimes.LastWriteTime, LLastWriteTime)) then
       Result := Boolean(SetFileTime(LFileHandle, LCreationTime, LLastAccessTime, LLastWriteTime));
   finally
     CloseHandle(LFileHandle);
   end;
 end;
 
-function GetFilesFromDirectoryEx(const ADirectory, AFileMask: string; const AFiles: TStringList; 
-  const ASortFiles: Boolean): Boolean;
+function GetFilesFromDirectoryEx(const ADirectory, AFileMask: string; const AFiles: TStringList; const ASortFiles: Boolean): Boolean;
 var
   LDirectory: string;
   LFindRec: TFindRec;
@@ -200,8 +199,7 @@ begin
   Result := GetFilesFromDirectoryEx(ADirectory,'', AFiles, ASortFiles);
 end;
 
-function GetFilesOlderThan(const AFilesToCheck, AFilesOlder: TStringList; const AFilesOlderThan: SYSTEMTIME; 
-  const AAddSortableTimeStampPrefix: Boolean): Boolean;
+function GetFilesOlderThan(const AFilesToCheck, AFilesOlder: TStringList; const AFilesOlderThan: SYSTEMTIME; const AAddSortableTimeStampPrefix: Boolean): Boolean;
 var
   LIndex: Integer;
   LFileName: string;
@@ -234,8 +232,7 @@ begin
     AFilesOlder.Sort;
 end;
 
-function DeleteFilesOlderThanEx(const ADirectory, AFileMask: string; const AFilesOlderThan: SYSTEMTIME; 
-  const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
+function DeleteFilesOlderThanEx(const ADirectory, AFileMask: string; const AFilesOlderThan: SYSTEMTIME; const AMinFilesToKeep: Integer; const ADeletedFiles: TStringList): Integer;
 var
   LFilesToCheck: TStringList;
   LOlderFilesWithTimeStamp: TStringList;
