@@ -1,4 +1,5 @@
-﻿// FileUtils.iss
+﻿ [Code]
+// FileUtils.iss
 
 const
   OPEN_EXISTING = 3;
