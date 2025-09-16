@@ -1,6 +1,6 @@
 # InnoSetup.FileUtils
 
-(reguires SystemtimeUtils from https://github.com/TommiPrami/InnoSetup.SystemTimeUtils)
+(requires SystemtimeUtils from https://github.com/TommiPrami/InnoSetup.SystemTimeUtils)
 
 Few utilies for files, fileage and systemtime. Some might be useful to others. 
 
