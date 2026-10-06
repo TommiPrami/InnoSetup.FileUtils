@@ -1,4 +1,4 @@
- [Code]
+﻿ [Code]
 // UnitTestFileUtils.iss
 
 const
